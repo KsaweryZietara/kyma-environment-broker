@@ -212,7 +212,7 @@ jobs:
 
       - name: Merge PR
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.BOT_TOKEN }}
           REPOSITORY: ${{ env.KYMA_ENVIRONMENT_BROKER_REPO }}
         run: scripts/merge_pr.sh
 
