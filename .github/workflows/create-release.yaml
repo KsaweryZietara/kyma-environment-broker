@@ -210,6 +210,11 @@ jobs:
             echo "PR_NUMBER=$(echo "$PR_STATUS" | tail -n 1)" >> $GITHUB_ENV
           fi
 
+      - name: Merge PR
+        env:
+          GH_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: scripts/merge_pr.sh
+
       - name: Await PR merge
         timeout-minutes: 45
         env:
