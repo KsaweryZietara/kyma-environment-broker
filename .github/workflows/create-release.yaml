@@ -180,7 +180,7 @@ jobs:
 
   bumps:
     name: Bump sec-scanners-config, KEB chart
-    needs: [validate-release, run-unit-tests, run-keb-chart-install-tests]
+    needs: [validate-release]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
