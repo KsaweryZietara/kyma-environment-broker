@@ -16,4 +16,4 @@ CURL_RESPONSE=$(curl -L \
   -H "Accept: application/vnd.github+json" \
   -H "${GITHUB_AUTH_HEADER}" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  ${GITHUB_URL}/pulls/${PR_NUMBER}/merge
+  ${GITHUB_URL}/pulls/${PR_NUMBER}/merge)
