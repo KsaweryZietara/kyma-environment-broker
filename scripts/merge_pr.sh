@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This script publishes a draft release
+# This script merges a pull request
 
 # standard bash error handling
 set -o nounset  # treat unset variables as an error and exit immediately.
@@ -8,7 +8,7 @@ set -o errexit  # exit immediately when a command fails.
 set -E          # needs to be set if we want the ERR trap
 set -o pipefail # prevents errors in a pipeline from being masked
 
-GITHUB_URL=https://api.github.com/repos/KsaweryZietara/kyma-environment-broker
+GITHUB_URL=https://api.github.com/repos/${REPOSITORY}
 GITHUB_AUTH_HEADER="Authorization: Bearer ${GH_TOKEN}"
 
 CURL_RESPONSE=$(curl -L \
