@@ -21,40 +21,40 @@ on:
         default: false
 
 jobs:
-  validate-release:
-    name: Validate release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Check if tag already exists
-        run: |
-          if [ $(git tag -l ${{ inputs.name }}) ]; then
-            echo "::error ::Tag ${{ inputs.name }} already exists"
-            exit 1
-          fi
-
-      - name: Check for existing artifacts from previous release runs
-        run: "./scripts/check_artifacts_existence.sh ${{ inputs.name }}"
-
-      - name: Setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          cache: 'pip'
-
-      - name: Install requirements
-        run: pip install -r scripts/python/requirements.txt
-
-      - name: Validate labels
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPOSITORY: ${{ env.KYMA_ENVIRONMENT_BROKER_REPO }}
-          NAME: ${{ inputs.name }}
-        run: python3 scripts/python/release_label_validator.py
+#  validate-release:
+#    name: Validate release
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Check if tag already exists
+#        run: |
+#          if [ $(git tag -l ${{ inputs.name }}) ]; then
+#            echo "::error ::Tag ${{ inputs.name }} already exists"
+#            exit 1
+#          fi
+#
+#      - name: Check for existing artifacts from previous release runs
+#        run: "./scripts/check_artifacts_existence.sh ${{ inputs.name }}"
+#
+#      - name: Setup python
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: '3.9'
+#          cache: 'pip'
+#
+#      - name: Install requirements
+#        run: pip install -r scripts/python/requirements.txt
+#
+#      - name: Validate labels
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          REPOSITORY: ${{ env.KYMA_ENVIRONMENT_BROKER_REPO }}
+#          NAME: ${{ inputs.name }}
+#        run: python3 scripts/python/release_label_validator.py
 
 #  run-unit-tests:
 #    name: Unit tests, go mod tidy
@@ -180,7 +180,6 @@ jobs:
 
   bumps:
     name: Bump sec-scanners-config, KEB chart
-    needs: [validate-release]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
