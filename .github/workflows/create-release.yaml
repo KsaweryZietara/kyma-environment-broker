@@ -214,7 +214,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
           REPOSITORY: ${{ env.KYMA_ENVIRONMENT_BROKER_REPO }}
-        run: scripts/merge_pr.sh
+        run: |
+          if [ "$PR_NUMBER" -gt 0 ]; then
+            scripts/merge_pr.sh
+          else
+            echo "Step skipped"
+          fi
 
       - name: Await PR merge
         timeout-minutes: 45
