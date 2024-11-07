@@ -9,7 +9,7 @@ env:
   BUMP_CHART_AND_IMAGES: bump-chart-and-images-${{ inputs.name }}
   MANAGEMENT_PLANE_CHARTS: "https://${{ vars.GH_TOOLS_HOST }}/kyma/${{ vars.MP_CHARTS_REPO_NAME }}.git"
   MANAGEMENT_PLANE_CHARTS_WITH_USER: "https://${{ vars.GIT_USER_NAME }}:${{ secrets.BOT_TOKEN_GITHUB_TOOLS }}@${{ vars.GH_TOOLS_HOST }}/kyma/${{ vars.MP_CHARTS_REPO_NAME }}.git"
-  KEB_API_URL: "https://api.github.com/repos/kyma-project/kyma-environment-broker"
+  KEB_API_URL: "https://api.github.com/repos/KsaweryZietara/kyma-environment-broker"
   KEB_RELEASES_URL: "https://github.com/kyma-project/kyma-environment-broker/releases"
   # needed by gh cli for GitHub enterprise
   GH_ENTERPRISE_TOKEN: ${{ secrets.BOT_TOKEN_GITHUB_TOOLS }}
@@ -31,22 +31,22 @@ on:
         default: false
 
 jobs:
-#  validate-release:
-#    name: Validate release
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#        with:
-#          fetch-depth: 0
-#
-#      - name: Check if tag already exists
-#        run: |
-#          if [ $(git tag -l ${{ inputs.name }}) ]; then
-#            echo "::error ::Tag ${{ inputs.name }} already exists"
-#            exit 1
-#          fi
-#
+  validate-release:
+    name: Validate release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if tag already exists
+        run: |
+          if [ $(git tag -l ${{ inputs.name }}) ]; then
+            echo "::error ::Tag ${{ inputs.name }} already exists"
+            exit 1
+          fi
+
 #      - name: Check for existing artifacts from previous release runs
 #        run: "./scripts/check_artifacts_existence.sh ${{ inputs.name }}"
 #
@@ -190,7 +190,7 @@ jobs:
 #
   bumps:
     name: Bump sec-scanners-config, KEB chart
-    needs: [validate-release, run-unit-tests, run-keb-chart-install-tests]
+    needs: [validate-release]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
