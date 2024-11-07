@@ -8,14 +8,6 @@ on:
         description: 'Create release'
         default: ""
         required: true
-      sec-file-and-chart:
-        type: boolean
-        description: 'Do not bump sec file and chart'
-        default: false
-      dry-run:
-        type: boolean
-        description: 'Do not publish'
-        default: false
 
 jobs:
   create-release:
@@ -23,8 +15,8 @@ jobs:
     uses: "./.github/workflows/create-release.yaml"
     with:
       name: ${{ inputs.name }}
-      sec-file-and-chart: ${{ inputs.sec-file-and-chart }}
-      dry-run: ${{ inputs.dry-run }}
+      sec-file-and-chart: false
+      dry-run: false
     secrets: inherit
 
   promote:
