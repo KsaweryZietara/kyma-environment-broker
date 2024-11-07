@@ -340,6 +340,8 @@ jobs:
           ./scripts/publish_release.sh ${{ needs.create-draft.outputs.release_id }}
 
   promote:
+    name: Promote
+    needs: publish-release
     runs-on: ubuntu-latest
     steps:
 #      - name: Validate required environment variables
