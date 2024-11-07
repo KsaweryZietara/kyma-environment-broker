@@ -33,6 +33,7 @@ jobs:
       name: ${{ inputs.name }}
       sec-file-and-chart: ${{ inputs.sec-file-and-chart }}
       dry-run: ${{ inputs.dry-run }}
+    secrets: inherit
 
   promote:
     name: Promote
