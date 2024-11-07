@@ -339,6 +339,9 @@ jobs:
           git checkout main
           ./scripts/publish_release.sh ${{ needs.create-draft.outputs.release_id }}
 
+  promote:
+    runs-on: ubuntu-latest
+    steps:
 #      - name: Validate required environment variables
 #        run: |
 #          [ -z "${{ vars.GIT_USER_EMAIL }}" ] && echo "GIT_USER_EMAIL is required" && exit 1
@@ -361,6 +364,9 @@ jobs:
 
       - name: Set branch name
         run: echo "BRANCH_NAME=keb-${TAG}" >> $GITHUB_ENV
+
+      - name: Echo branch name
+        run: echo $BRANCH_NAME
 
 #      - name: Setup git and clone repo
 #        env:
