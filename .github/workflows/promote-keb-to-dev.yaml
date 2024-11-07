@@ -3,7 +3,7 @@ name: Promote KEB to dev
 env:
   MANAGEMENT_PLANE_CHARTS:  "https://${{ vars.GH_TOOLS_HOST }}/kyma/${{ vars.MP_CHARTS_REPO_NAME }}.git"
   MANAGEMENT_PLANE_CHARTS_WITH_USER: "https://${{ vars.GIT_USER_NAME }}:${{ secrets.BOT_TOKEN_GITHUB_TOOLS }}@${{ vars.GH_TOOLS_HOST }}/kyma/${{ vars.MP_CHARTS_REPO_NAME }}.git"
-  KEB_API_URL: "https://api.github.com/repos/kyma-project/kyma-environment-broker"
+  KEB_API_URL: "https://api.github.com/repos/KsaweryZietara/kyma-environment-broker"
   KEB_RELEASES_URL: "https://github.com/kyma-project/kyma-environment-broker/releases"
   # needed by gh cli for GitHub enterprise
   GH_ENTERPRISE_TOKEN: ${{ secrets.BOT_TOKEN_GITHUB_TOOLS }}
