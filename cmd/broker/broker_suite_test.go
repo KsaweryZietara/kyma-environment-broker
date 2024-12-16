@@ -25,7 +25,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 
-	"code.cloudfoundry.org/lager"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/kyma-project/control-plane/components/provisioner/pkg/gqlschema"
@@ -50,8 +49,8 @@ import (
 	"github.com/kyma-project/kyma-environment-broker/internal/provisioner"
 	kebRuntime "github.com/kyma-project/kyma-environment-broker/internal/runtime"
 	"github.com/kyma-project/kyma-environment-broker/internal/storage"
-	"github.com/pivotal-cf/brokerapi/v8/domain"
-	"github.com/pivotal-cf/brokerapi/v8/domain/apiresponses"
+	"github.com/pivotal-cf/brokerapi/v11/domain"
+	"github.com/pivotal-cf/brokerapi/v11/domain/apiresponses"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -393,7 +392,7 @@ func (s *BrokerSuiteTest) CreateAPI(inputFactory broker.PlanValidator, cfg *Conf
 	kcBuilder := &kcMock.KcBuilder{}
 	kcBuilder.On("Build", nil).Return("--kubeconfig file", nil)
 	createAPI(s.router, servicesConfig, inputFactory, cfg, db, provisioningQueue, deprovisionQueue, updateQueue,
-		lager.NewLogger("api"), log, planDefaults, kcBuilder, skrK8sClientProvider, skrK8sClientProvider, gardenerClient, fakeKcpK8sClient, eventBroker)
+		log, planDefaults, kcBuilder, skrK8sClientProvider, skrK8sClientProvider, gardenerClient, fakeKcpK8sClient, eventBroker)
 
 	s.httpServer = httptest.NewServer(s.router)
 }

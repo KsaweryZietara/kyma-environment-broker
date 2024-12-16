@@ -15,7 +15,7 @@ import (
 	"github.com/kyma-project/kyma-environment-broker/internal/storage/dberr"
 
 	"github.com/gorilla/mux"
-	"github.com/pivotal-cf/brokerapi/v8/domain"
+	"github.com/pivotal-cf/brokerapi/v11/domain"
 )
 
 const attachmentName = "kubeconfig.yaml"

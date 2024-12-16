@@ -21,7 +21,6 @@ import (
 	"github.com/kyma-project/kyma-environment-broker/internal/metricsv2"
 	"github.com/kyma-project/kyma-environment-broker/internal/whitelist"
 
-	"code.cloudfoundry.org/lager"
 	"github.com/dlmiddlecote/sqlstats"
 	shoot "github.com/gardener/gardener/pkg/apis/core/v1beta1"
 	"github.com/gorilla/handlers"
@@ -234,8 +233,6 @@ func main() {
 	}
 
 	cfg.OrchestrationConfig.KubernetesVersion = cfg.Provisioner.KubernetesVersion
-	// create logger
-	logger := lager.NewLogger("kyma-env-broker")
 
 	log.Info("Starting Kyma Environment Broker")
 
@@ -332,7 +329,7 @@ func main() {
 
 	// create server
 	router := mux.NewRouter()
-	createAPI(router, servicesConfig, inputFactory, &cfg, db, provisionQueue, deprovisionQueue, updateQueue, logger, log,
+	createAPI(router, servicesConfig, inputFactory, &cfg, db, provisionQueue, deprovisionQueue, updateQueue, log,
 		inputFactory.GetPlanDefaults, kcBuilder, skrK8sClientProvider, skrK8sClientProvider, gardenerClient, kcpK8sClient, eventBroker)
 
 	// create metrics endpoint
@@ -411,19 +408,12 @@ func logConfiguration(logs *slog.Logger, cfg Config) {
 }
 
 func createAPI(router *mux.Router, servicesConfig broker.ServicesConfig, planValidator broker.PlanValidator, cfg *Config, db storage.BrokerStorage,
-	provisionQueue, deprovisionQueue, updateQueue *process.Queue, logger lager.Logger, logs *slog.Logger, planDefaults broker.PlanDefaults, kcBuilder kubeconfig.KcBuilder, clientProvider K8sClientProvider, kubeconfigProvider KubeconfigProvider, gardenerClient, kcpK8sClient client.Client, publisher event.Publisher) {
+	provisionQueue, deprovisionQueue, updateQueue *process.Queue, logs *slog.Logger, planDefaults broker.PlanDefaults, kcBuilder kubeconfig.KcBuilder, clientProvider K8sClientProvider, kubeconfigProvider KubeconfigProvider, gardenerClient, kcpK8sClient client.Client, publisher event.Publisher) {
 
 	suspensionCtxHandler := suspension.NewContextUpdateHandler(db.Operations(), provisionQueue, deprovisionQueue, logs)
 
 	defaultPlansConfig, err := servicesConfig.DefaultPlansConfig()
 	fatalOnError(err, logs)
-
-	debugSink, err := lager.NewRedactingSink(lager.NewWriterSink(os.Stdout, lager.DEBUG), []string{"instance-details"}, []string{})
-	fatalOnError(err, logs)
-	logger.RegisterSink(debugSink)
-	errorSink, err := lager.NewRedactingSink(lager.NewWriterSink(os.Stderr, lager.ERROR), []string{"instance-details"}, []string{})
-	fatalOnError(err, logs)
-	logger.RegisterSink(errorSink)
 
 	freemiumGlobalAccountIds, err := whitelist.ReadWhitelistedGlobalAccountIdsFromFile(cfg.FreemiumWhitelistedGlobalAccountsFilePath)
 	fatalOnError(err, logs)
@@ -460,7 +450,7 @@ func createAPI(router *mux.Router, servicesConfig broker.ServicesConfig, planVal
 		"/oauth/{region}/", // oauth2 handled by Ory with region
 	} {
 		route := router.PathPrefix(prefix).Subrouter()
-		broker.AttachRoutes(route, kymaEnvBroker, logger, cfg.Broker.Binding.CreateBindingTimeout)
+		broker.AttachRoutes(route, kymaEnvBroker, logs, cfg.Broker.Binding.CreateBindingTimeout)
 	}
 
 	respWriter := httputil.NewResponseWriter(logs, cfg.DevelopmentMode)
