@@ -498,34 +498,34 @@ func requiredOwnClusterSchemaProperties() []string {
 	return []string{"name", "kubeconfig", "shootName", "shootDomain"}
 }
 
-func SapConvergedCloudSchema(machineTypesDisplay, regionsDisplay map[string]string, machineTypes []string, additionalParams, update bool, shootAndSeedFeatureFlag bool, sapConvergedCloudRegions []string) *map[string]interface{} {
-	properties := NewProvisioningProperties(machineTypesDisplay, machineTypesDisplay, regionsDisplay, machineTypes, machineTypes, sapConvergedCloudRegions, update)
+func SapConvergedCloudSchema(machineTypesDisplay, regionsDisplay map[string]string, machineTypes []string, additionalParams, update bool, shootAndSeedFeatureFlag bool, sapConvergedCloudRegions []string, catalog bool) *map[string]interface{} {
+	properties := NewProvisioningProperties(machineTypesDisplay, machineTypesDisplay, regionsDisplay, machineTypes, machineTypes, sapConvergedCloudRegions, update, catalog)
 	return createSchemaWithProperties(properties, additionalParams, update, requiredSchemaProperties(), true, shootAndSeedFeatureFlag)
 }
 
-func PreviewSchema(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay map[string]string, machineTypes, additionalMachineTypes []string, additionalParams, update bool, euAccessRestricted bool) *map[string]interface{} {
-	properties := NewProvisioningProperties(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay, machineTypes, additionalMachineTypes, AWSRegions(euAccessRestricted), update)
+func PreviewSchema(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay map[string]string, machineTypes, additionalMachineTypes []string, additionalParams, update bool, euAccessRestricted bool, catalog bool) *map[string]interface{} {
+	properties := NewProvisioningProperties(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay, machineTypes, additionalMachineTypes, AWSRegions(euAccessRestricted), update, catalog)
 	properties.Networking = NewNetworkingSchema()
 	return createSchemaWithProperties(properties, additionalParams, update, requiredSchemaProperties(), false, false)
 }
 
-func GCPSchema(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay map[string]string, machineTypes, additionalMachineTypes []string, additionalParams, update bool, shootAndSeedFeatureFlag bool, assuredWorkloads bool) *map[string]interface{} {
-	properties := NewProvisioningProperties(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay, machineTypes, additionalMachineTypes, GcpRegions(assuredWorkloads), update)
+func GCPSchema(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay map[string]string, machineTypes, additionalMachineTypes []string, additionalParams, update bool, shootAndSeedFeatureFlag bool, assuredWorkloads bool, catalog bool) *map[string]interface{} {
+	properties := NewProvisioningProperties(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay, machineTypes, additionalMachineTypes, GcpRegions(assuredWorkloads), update, catalog)
 	return createSchemaWithProperties(properties, additionalParams, update, requiredSchemaProperties(), true, shootAndSeedFeatureFlag)
 }
 
-func AWSSchema(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay map[string]string, machineTypes, additionalMachineTypes []string, additionalParams, update bool, euAccessRestricted bool, shootAndSeedSameRegion bool) *map[string]interface{} {
-	properties := NewProvisioningProperties(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay, machineTypes, additionalMachineTypes, AWSRegions(euAccessRestricted), update)
+func AWSSchema(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay map[string]string, machineTypes, additionalMachineTypes []string, additionalParams, update bool, euAccessRestricted bool, shootAndSeedSameRegion bool, catalog bool) *map[string]interface{} {
+	properties := NewProvisioningProperties(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay, machineTypes, additionalMachineTypes, AWSRegions(euAccessRestricted), update, catalog)
 	return createSchemaWithProperties(properties, additionalParams, update, requiredSchemaProperties(), true, shootAndSeedSameRegion)
 }
 
-func AzureSchema(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay map[string]string, machineTypes, additionalMachineTypes []string, additionalParams, update bool, euAccessRestricted bool, shootAndSeedFeatureFlag bool) *map[string]interface{} {
-	properties := NewProvisioningProperties(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay, machineTypes, additionalMachineTypes, AzureRegions(euAccessRestricted), update)
+func AzureSchema(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay map[string]string, machineTypes, additionalMachineTypes []string, additionalParams, update bool, euAccessRestricted bool, shootAndSeedFeatureFlag bool, catalog bool) *map[string]interface{} {
+	properties := NewProvisioningProperties(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay, machineTypes, additionalMachineTypes, AzureRegions(euAccessRestricted), update, catalog)
 	return createSchemaWithProperties(properties, additionalParams, update, requiredSchemaProperties(), true, shootAndSeedFeatureFlag)
 }
 
-func AzureLiteSchema(machineTypesDisplay, regionsDisplay map[string]string, machineTypes []string, additionalParams, update bool, euAccessRestricted bool, shootAndSeedFeatureFlag bool) *map[string]interface{} {
-	properties := NewProvisioningProperties(machineTypesDisplay, machineTypesDisplay, regionsDisplay, machineTypes, machineTypes, AzureRegions(euAccessRestricted), update)
+func AzureLiteSchema(machineTypesDisplay, regionsDisplay map[string]string, machineTypes []string, additionalParams, update bool, euAccessRestricted bool, shootAndSeedFeatureFlag bool, catalog bool) *map[string]interface{} {
+	properties := NewProvisioningProperties(machineTypesDisplay, machineTypesDisplay, regionsDisplay, machineTypes, machineTypes, AzureRegions(euAccessRestricted), update, catalog)
 
 	properties.AutoScalerMax.Minimum = 2
 	properties.AutoScalerMin.Minimum = 2
@@ -654,7 +654,7 @@ func unmarshalSchema(schema *RootSchema) *map[string]interface{} {
 
 // Plans is designed to hold plan defaulting logic
 // keep internal/hyperscaler/azure/config.go in sync with any changes to available zones
-func Plans(plans PlansConfig, provider pkg.CloudProvider, includeAdditionalParamsInSchema bool, euAccessRestricted bool, useSmallerMachineTypes bool, shootAndSeedFeatureFlag bool, sapConvergedCloudRegions []string, assuredWorkloads bool) map[string]domain.ServicePlan {
+func Plans(plans PlansConfig, provider pkg.CloudProvider, includeAdditionalParamsInSchema bool, euAccessRestricted bool, useSmallerMachineTypes bool, shootAndSeedFeatureFlag bool, sapConvergedCloudRegions []string, assuredWorkloads bool, catalog bool) map[string]domain.ServicePlan {
 	awsMachineNames := AwsMachinesNames(false)
 	awsMachinesDisplay := AwsMachinesDisplay(false)
 	awsAdditionalMachineNames := AwsMachinesNames(true)
@@ -678,20 +678,20 @@ func Plans(plans PlansConfig, provider pkg.CloudProvider, includeAdditionalParam
 		delete(azureLiteMachinesDisplay, "Standard_D2s_v5")
 	}
 
-	awsCreateSchema := AWSSchema(awsMachinesDisplay, awsAdditionalMachinesDisplay, awsRegionsDisplay, awsMachineNames, awsAdditionalMachineNames, includeAdditionalParamsInSchema, false, euAccessRestricted, shootAndSeedFeatureFlag)
-	awsUpdateSchema := AWSSchema(awsMachinesDisplay, awsAdditionalMachinesDisplay, awsRegionsDisplay, awsMachineNames, awsAdditionalMachineNames, includeAdditionalParamsInSchema, true, euAccessRestricted, shootAndSeedFeatureFlag)
-	azureCreateSchema := AzureSchema(azureMachinesDisplay, azureAdditionalMachinesDisplay, azureRegionsDisplay, azureMachinesNames, azureAdditionalMachinesNames, includeAdditionalParamsInSchema, false, euAccessRestricted, shootAndSeedFeatureFlag)
-	azureUpdateSchema := AzureSchema(azureMachinesDisplay, azureAdditionalMachinesDisplay, azureRegionsDisplay, azureMachinesNames, azureAdditionalMachinesNames, includeAdditionalParamsInSchema, true, euAccessRestricted, shootAndSeedFeatureFlag)
-	azureLiteCreateSchema := AzureLiteSchema(azureLiteMachinesDisplay, azureRegionsDisplay, azureLiteMachinesNames, includeAdditionalParamsInSchema, false, euAccessRestricted, shootAndSeedFeatureFlag)
-	azureLiteUpdateSchema := AzureLiteSchema(azureLiteMachinesDisplay, azureRegionsDisplay, azureLiteMachinesNames, includeAdditionalParamsInSchema, true, euAccessRestricted, shootAndSeedFeatureFlag)
+	awsCreateSchema := AWSSchema(awsMachinesDisplay, awsAdditionalMachinesDisplay, awsRegionsDisplay, awsMachineNames, awsAdditionalMachineNames, includeAdditionalParamsInSchema, false, euAccessRestricted, shootAndSeedFeatureFlag, catalog)
+	awsUpdateSchema := AWSSchema(awsMachinesDisplay, awsAdditionalMachinesDisplay, awsRegionsDisplay, awsMachineNames, awsAdditionalMachineNames, includeAdditionalParamsInSchema, true, euAccessRestricted, shootAndSeedFeatureFlag, catalog)
+	azureCreateSchema := AzureSchema(azureMachinesDisplay, azureAdditionalMachinesDisplay, azureRegionsDisplay, azureMachinesNames, azureAdditionalMachinesNames, includeAdditionalParamsInSchema, false, euAccessRestricted, shootAndSeedFeatureFlag, catalog)
+	azureUpdateSchema := AzureSchema(azureMachinesDisplay, azureAdditionalMachinesDisplay, azureRegionsDisplay, azureMachinesNames, azureAdditionalMachinesNames, includeAdditionalParamsInSchema, true, euAccessRestricted, shootAndSeedFeatureFlag, catalog)
+	azureLiteCreateSchema := AzureLiteSchema(azureLiteMachinesDisplay, azureRegionsDisplay, azureLiteMachinesNames, includeAdditionalParamsInSchema, false, euAccessRestricted, shootAndSeedFeatureFlag, catalog)
+	azureLiteUpdateSchema := AzureLiteSchema(azureLiteMachinesDisplay, azureRegionsDisplay, azureLiteMachinesNames, includeAdditionalParamsInSchema, true, euAccessRestricted, shootAndSeedFeatureFlag, catalog)
 	freemiumCreateSchema := FreemiumSchema(provider, azureRegionsDisplay, includeAdditionalParamsInSchema, false, euAccessRestricted)
 	freemiumUpdateSchema := FreemiumSchema(provider, azureRegionsDisplay, includeAdditionalParamsInSchema, true, euAccessRestricted)
-	gcpCreateSchema := GCPSchema(gcpMachinesDisplay, gcpAdditionalMachinesDisplay, gcpRegionsDisplay, gcpMachinesNames, gcpAdditionalMachinesNames, includeAdditionalParamsInSchema, false, shootAndSeedFeatureFlag, assuredWorkloads)
-	gcpUpdateSchema := GCPSchema(gcpMachinesDisplay, gcpAdditionalMachinesDisplay, gcpRegionsDisplay, gcpMachinesNames, gcpAdditionalMachinesNames, includeAdditionalParamsInSchema, true, shootAndSeedFeatureFlag, assuredWorkloads)
+	gcpCreateSchema := GCPSchema(gcpMachinesDisplay, gcpAdditionalMachinesDisplay, gcpRegionsDisplay, gcpMachinesNames, gcpAdditionalMachinesNames, includeAdditionalParamsInSchema, false, shootAndSeedFeatureFlag, assuredWorkloads, catalog)
+	gcpUpdateSchema := GCPSchema(gcpMachinesDisplay, gcpAdditionalMachinesDisplay, gcpRegionsDisplay, gcpMachinesNames, gcpAdditionalMachinesNames, includeAdditionalParamsInSchema, true, shootAndSeedFeatureFlag, assuredWorkloads, catalog)
 	ownClusterCreateSchema := OwnClusterSchema(false)
 	ownClusterUpdateSchema := OwnClusterSchema(true)
-	previewCreateSchema := PreviewSchema(awsMachinesDisplay, awsAdditionalMachinesDisplay, awsRegionsDisplay, awsMachineNames, awsAdditionalMachineNames, includeAdditionalParamsInSchema, false, euAccessRestricted)
-	previewUpdateSchema := PreviewSchema(awsMachinesDisplay, awsAdditionalMachinesDisplay, awsRegionsDisplay, awsMachineNames, awsAdditionalMachineNames, includeAdditionalParamsInSchema, true, euAccessRestricted)
+	previewCreateSchema := PreviewSchema(awsMachinesDisplay, awsAdditionalMachinesDisplay, awsRegionsDisplay, awsMachineNames, awsAdditionalMachineNames, includeAdditionalParamsInSchema, false, euAccessRestricted, catalog)
+	previewUpdateSchema := PreviewSchema(awsMachinesDisplay, awsAdditionalMachinesDisplay, awsRegionsDisplay, awsMachineNames, awsAdditionalMachineNames, includeAdditionalParamsInSchema, true, euAccessRestricted, catalog)
 	trialCreateSchema := TrialSchema(includeAdditionalParamsInSchema, false)
 	trialUpdateSchema := TrialSchema(includeAdditionalParamsInSchema, true)
 
@@ -713,8 +713,8 @@ func Plans(plans PlansConfig, provider pkg.CloudProvider, includeAdditionalParam
 		sapConvergedCloudMachinesNames := SapConvergedCloudMachinesNames()
 		sapConvergedCloudMachinesDisplay := SapConvergedCloudMachinesDisplay()
 		sapConvergedCloudRegionsDisplay := SapConvergedCloudRegionsDisplay()
-		sapConvergedCloudCreateSchema := SapConvergedCloudSchema(sapConvergedCloudMachinesDisplay, sapConvergedCloudRegionsDisplay, sapConvergedCloudMachinesNames, includeAdditionalParamsInSchema, false, shootAndSeedFeatureFlag, sapConvergedCloudRegions)
-		sapConvergedCloudUpdateSchema := SapConvergedCloudSchema(sapConvergedCloudMachinesDisplay, sapConvergedCloudRegionsDisplay, sapConvergedCloudMachinesNames, includeAdditionalParamsInSchema, true, shootAndSeedFeatureFlag, sapConvergedCloudRegions)
+		sapConvergedCloudCreateSchema := SapConvergedCloudSchema(sapConvergedCloudMachinesDisplay, sapConvergedCloudRegionsDisplay, sapConvergedCloudMachinesNames, includeAdditionalParamsInSchema, false, shootAndSeedFeatureFlag, sapConvergedCloudRegions, catalog)
+		sapConvergedCloudUpdateSchema := SapConvergedCloudSchema(sapConvergedCloudMachinesDisplay, sapConvergedCloudRegionsDisplay, sapConvergedCloudMachinesNames, includeAdditionalParamsInSchema, true, shootAndSeedFeatureFlag, sapConvergedCloudRegions, catalog)
 		outputPlans[SapConvergedCloudPlanID] = defaultServicePlan(SapConvergedCloudPlanID, SapConvergedCloudPlanName, plans, sapConvergedCloudCreateSchema, sapConvergedCloudUpdateSchema)
 	}
 

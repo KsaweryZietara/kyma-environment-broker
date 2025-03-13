@@ -413,6 +413,8 @@ type ModuleDTO struct {
 	CustomResourcePolicy CustomResourcePolicy `json:"customResourcePolicy,omitempty" yaml:"customResourcePolicy,omitempty"`
 }
 
+const KymaWorkerName = "cpu-worker-0"
+
 type AdditionalWorkerNodePool struct {
 	Name          string `json:"name"`
 	MachineType   string `json:"machineType"`
@@ -427,6 +429,9 @@ func (a AdditionalWorkerNodePool) Validate() error {
 	}
 	if a.HAZones && a.AutoScalerMin < 3 {
 		return fmt.Errorf("AutoScalerMin %v should be at least 3 when HA zones are enabled for %s additional worker node pool", a.AutoScalerMin, a.Name)
+	}
+	if a.Name == KymaWorkerName {
+		return fmt.Errorf("The name %s is reserved for the Kyma worker node pool and cannot be used", KymaWorkerName)
 	}
 	return nil
 }

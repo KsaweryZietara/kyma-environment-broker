@@ -744,6 +744,42 @@ func TestUpdateAdditionalWorkerNodePools(t *testing.T) {
 	}
 }
 
+func TestUpdateWithReservedWorkerNodePoolName(t *testing.T) {
+	// given
+	instance := fixture.FixInstance(instanceID)
+	instance.ServicePlanID = AWSPlanID
+	st := storage.NewMemoryStorage()
+	err := st.Instances().Insert(instance)
+	require.NoError(t, err)
+	err = st.Operations().InsertProvisioningOperation(fixProvisioningOperation("provisioning01"))
+	require.NoError(t, err)
+
+	handler := &handler{}
+	q := &automock.Queue{}
+	q.On("Add", mock.AnythingOfType("string"))
+	planDefaults := func(planID string, platformProvider pkg.CloudProvider, provider *pkg.CloudProvider) (*gqlschema.ClusterConfigInput, error) {
+		return &gqlschema.ClusterConfigInput{}, nil
+	}
+	kcBuilder := &kcMock.KcBuilder{}
+	svc := NewUpdate(Config{}, st.Instances(), st.RuntimeStates(), st.Operations(), handler, true, true, false, q, PlansConfig{},
+		planDefaults, fixLogger(), dashboardConfig, kcBuilder, &OneForAllConvergedCloudRegionsProvider{}, fakeKcpK8sClient, nil)
+
+	additionalWorkerNodePools := `[{"name": "cpu-worker-0", "machineType": "m6i.large", "haZones": true, "autoScalerMin": 3, "autoScalerMax": 20}]`
+
+	// when
+	_, err = svc.Update(context.Background(), instanceID, domain.UpdateDetails{
+		ServiceID:       "",
+		PlanID:          AWSPlanID,
+		RawParameters:   json.RawMessage("{\"additionalWorkerNodePools\":" + additionalWorkerNodePools + "}"),
+		PreviousValues:  domain.PreviousValues{},
+		RawContext:      json.RawMessage("{\"globalaccount_id\":\"globalaccount_id_1\", \"active\":true}"),
+		MaintenanceInfo: nil,
+	}, true)
+
+	// then
+	assert.EqualError(t, err, "The name cpu-worker-0 is reserved for the Kyma worker node pool and cannot be used")
+}
+
 func TestHAZones(t *testing.T) {
 	t.Run("should fail when attempting to disable HA zones for existing additional worker node pool", func(t *testing.T) {
 		// given

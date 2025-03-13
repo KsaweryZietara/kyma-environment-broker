@@ -300,7 +300,7 @@ func ShootAndSeedSameRegionProperty() *Type {
 
 // NewProvisioningProperties creates a new properties for different plans
 // Note that the order of properties will be the same in the form on the website
-func NewProvisioningProperties(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay map[string]string, machineTypes, additionalMachineTypes, regions []string, update bool) ProvisioningProperties {
+func NewProvisioningProperties(machineTypesDisplay, additionalMachineTypesDisplay, regionsDisplay map[string]string, machineTypes, additionalMachineTypes, regions []string, update, catalog bool) ProvisioningProperties {
 
 	properties := ProvisioningProperties{
 		UpdateProperties: UpdateProperties{
@@ -323,7 +323,7 @@ func NewProvisioningProperties(machineTypesDisplay, additionalMachineTypesDispla
 				EnumDisplayName: machineTypesDisplay,
 				Description:     "Specifies the type of the virtual machine.",
 			},
-			AdditionalWorkerNodePools: NewAdditionalWorkerNodePoolsSchema(additionalMachineTypesDisplay, additionalMachineTypes),
+			AdditionalWorkerNodePools: NewAdditionalWorkerNodePoolsSchema(additionalMachineTypesDisplay, additionalMachineTypes, catalog),
 		},
 		Name: NameProperty(),
 		Region: &Type{
@@ -434,8 +434,8 @@ func AdministratorsProperty() *Type {
 	}
 }
 
-func NewAdditionalWorkerNodePoolsSchema(machineTypesDisplay map[string]string, machineTypes []string) *AdditionalWorkerNodePoolsType {
-	return &AdditionalWorkerNodePoolsType{
+func NewAdditionalWorkerNodePoolsSchema(machineTypesDisplay map[string]string, machineTypes []string, catalog bool) *AdditionalWorkerNodePoolsType {
+	additionalWorkerNodePoolsType := &AdditionalWorkerNodePoolsType{
 		Type: Type{
 			Type:        "array",
 			UniqueItems: true,
@@ -452,8 +452,8 @@ func NewAdditionalWorkerNodePoolsSchema(machineTypesDisplay map[string]string, m
 					MinLength: 1,
 					MaxLength: 15,
 					// Allows for all alphanumeric characters and '-'
-					Pattern:     "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
-					Description: "Specifies the unique name of the additional worker node pool. The name must consist of lowercase alphanumeric characters or '-', must start and end with an alphanumeric character, and can be a maximum of 15 characters in length.",
+					Pattern:     "^(?!cpu-worker-0$)[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+					Description: "Specifies the unique name of the additional worker node pool. The name must consist of lowercase alphanumeric characters or '-', must start and end with an alphanumeric character, and can be a maximum of 15 characters in length. The name “cpu-worker-0” is reserved for the Kyma worker node pool and cannot be used.",
 				},
 				MachineType: Type{
 					Type:            "string",
@@ -484,4 +484,10 @@ func NewAdditionalWorkerNodePoolsSchema(machineTypesDisplay map[string]string, m
 			},
 		},
 	}
+
+	if catalog {
+		additionalWorkerNodePoolsType.Items.Properties.Name.Pattern = "^(?!cpu-worker-0$)[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+	}
+
+	return additionalWorkerNodePoolsType
 }
