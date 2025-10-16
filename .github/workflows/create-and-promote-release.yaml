@@ -23,10 +23,10 @@ jobs:
       dry-run: false
     secrets: inherit
 
-  promote:
-    name: Promote
-    needs: create-release
-    uses: "./.github/workflows/promote-keb-to-dev.yaml"
-    with:
-      releaseTag: ${{ inputs.name }}
-    secrets: inherit
+#  promote:
+#    name: Promote
+#    needs: create-release
+#    uses: "./.github/workflows/promote-keb-to-dev.yaml"
+#    with:
+#      releaseTag: ${{ inputs.name }}
+#    secrets: inherit
