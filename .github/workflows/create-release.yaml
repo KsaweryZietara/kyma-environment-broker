@@ -359,7 +359,7 @@ jobs:
           REPOSITORY: ${{ github.repository_owner }}/kyma-environment-broker
         run: |
           if gh api repos/${REPOSITORY}/contents/docs/notable-changes/${{ inputs.name }} --jq '. | length > 0' >/dev/null 2>&1; then
-            echo "No notes"
+            echo "Contains notes"
             NOTABLE_CHANGES_URL="https://github.com/${REPOSITORY}/tree/main/docs/notable-changes/${{ inputs.name }}"
             NOTABLE_CHANGES=$'\n\n## Notable Changes\nSee [docs/notable-changes/${{ inputs.name }}]('"${NOTABLE_CHANGES_URL}"') for detailed information.'
             
@@ -370,7 +370,7 @@ jobs:
             --verify-tag \
             --notes "${NOTABLE_CHANGES}"
           else
-            echo "Contains notes"
+            echo "No notes"
             gh release create ${{ inputs.name }} \
             --draft \
             --title "${{ inputs.name }}" \
